@@ -1,0 +1,290 @@
+openapi: 3.0.3
+info:
+  title: ISEL Channel Management API
+  description: API for managing channels, invitations, messages, and users for ISEL DAW project.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+paths:
+  /channels:
+    get:
+      summary: Get all channels
+      operationId: getAllChannels
+      responses:
+        '200':
+          description: A list of channels
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Channel'
+    post:
+      summary: Create a new channel
+      operationId: createChannel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelInput'
+      responses:
+        '201':
+          description: Channel created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+
+  /channels/{channelId}:
+    delete:
+      summary: Delete a channel
+      operationId: deleteChannel
+      parameters:
+        - name: channelId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Channel deleted successfully
+
+  /channels/{channelId}/participants:
+    put:
+      summary: Add or remove a participant
+      operationId: manageParticipant
+      parameters:
+        - name: channelId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipantInput'
+      responses:
+        '200':
+          description: Participant managed successfully
+
+  /users:
+    post:
+      summary: Create a new user
+      operationId: signUp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: User created successfully
+
+  /users/{userId}:
+    get:
+      summary: Get a user by ID
+      operationId: getUserById
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User details
+    delete:
+      summary: Delete a user
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User deleted successfully
+
+  /messages/{channelId}:
+    post:
+      summary: Send a message
+      operationId: sendMessage
+      parameters:
+        - name: channelId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageInput'
+      responses:
+        '201':
+          description: Message sent successfully
+    get:
+      summary: Get messages from a channel
+      operationId: getMessagesByChannel
+      parameters:
+        - name: channelId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+
+  /invitations:
+    post:
+      summary: Create an invitation
+      operationId: createInvitation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationInput'
+      responses:
+        '201':
+          description: Invitation created successfully
+    get:
+      summary: Get all invitations
+      operationId: getAllInvitations
+      responses:
+        '200':
+          description: A list of invitations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invitation'
+
+  /invitations/{invitationId}:
+    put:
+      summary: Accept or Reject an invitation
+      operationId: manageInvitation
+      parameters:
+        - name: invitationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  enum: [accept, reject]
+      responses:
+        '200':
+          description: Invitation action completed successfully
+
+components:
+  schemas:
+    Channel:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        ownerName:
+          type: string
+        type:
+          $ref: '#/components/schemas/ChannelKind'
+
+    ChannelInput:
+      type: object
+      properties:
+        name:
+          type: string
+        ownerName:
+          type: string
+        type:
+          $ref: '#/components/schemas/ChannelKind'
+
+    ChannelKind:
+      type: string
+      enum: [PUBLIC, PRIVATE]
+
+    Permissions:
+      type: string
+      enum: [READ_ONLY, WRITE]
+
+    UserInput:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    Invitation:
+      type: object
+      properties:
+        inviterName:
+          type: string
+        inviteeName:
+          type: string
+        channelId:
+          type: integer
+
+    InvitationInput:
+      type: object
+      properties:
+        inviterName:
+          type: string
+        inviteeName:
+          type: string
+        channelId:
+          type: integer
+
+    ParticipantInput:
+      type: object
+      properties:
+        username:
+          type: string
+        permissions:
+          $ref: '#/components/schemas/Permissions'
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        channelId:
+          type: integer
+        content:
+          type: string
+
+    MessageInput:
+      type: object
+      properties:
+        username:
+          type: string
+        channelId:
+          type: integer
+        content:
+          type: string
+

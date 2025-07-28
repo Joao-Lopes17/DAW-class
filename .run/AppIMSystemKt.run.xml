@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="AppIMSystemKt" type="JetRunConfigurationType" nameIsGenerated="true">
+    <envs>
+      <env name="DB_URL" value="jdbc:postgresql://localhost:5432/db" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="pt.isel.AppIMSystemKt" />
+    <module name="2024-daw-leic53d-g11-53d.host.main" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
